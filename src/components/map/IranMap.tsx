@@ -8,14 +8,15 @@ import IranBorder from "./IranBorder";
 import MapShapeButton from "./MapShapeButton";
 import MapCircleButton from "./MapCircleButton";
 
-
-
 const iranBounds = L.latLngBounds([24.5, 43.5], [40, 63.5]);
 
 const IranMap = () => {
   const [iranData, setIranData] = useState<FeatureCollection | null>(null);
-
   const [shapePoints, setShapePoints] = useState<[number, number][]>([]);
+
+  const handleResetShape = () => {
+    setShapePoints([]);
+  };
 
   useEffect(() => {
     const loadIranGeoJson = async () => {
@@ -41,13 +42,15 @@ const IranMap = () => {
     <div
       style={{
         position: "relative",
-
         width: "100vw",
         height: "100vh",
       }}
     >
       {/* Shape button */}
-      <MapShapeButton onCreateShape={setShapePoints} />
+      <MapShapeButton
+        onCreateShape={setShapePoints}
+        onResetShape={handleResetShape}
+      />
 
       {/* Circle button */}
       <MapCircleButton />
@@ -92,10 +95,10 @@ const IranMap = () => {
           <Polygon
             positions={shapePoints}
             pathOptions={{
-              color: "#2563eb",
-              weight: 3,
+              color: "#a10000",
+              weight: 1.5,
               fill: true,
-              fillColor: "#3b82f6",
+              fillColor: "#f63b3b",
               fillOpacity: 0.4,
             }}
           />
