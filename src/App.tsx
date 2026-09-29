@@ -1,7 +1,9 @@
-import Map from "./components/Map";
+import IranMap from "./components/map/IranMap";
+
+// import Map from "./components/Map";
 
 function App() {
-  return <Map />;
+  return <IranMap  />;
 }
 
 export default App;
