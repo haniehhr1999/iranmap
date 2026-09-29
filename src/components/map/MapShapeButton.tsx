@@ -1,12 +1,10 @@
 import { useState } from "react";
 import Select, { type MultiValue } from "react-select";
 
-import {
-  dataCollection,
-  type DataModel,
-} from "../../models";
+import { dataCollection, type DataModel } from "../../models";
 
 import { showToast } from "../../utils/toast";
+import { sortPointsAroundCenter } from "../../utils/geometry";
 
 type MapShapeButtonProps = {
   onCreateShape: (points: [number, number][]) => void;
@@ -24,33 +22,32 @@ const cityOptions: CityOption[] = dataCollection.map((item) => ({
   data: item,
 }));
 
-const MapShapeButton = ({
-  onCreateShape,
-}: MapShapeButtonProps) => {
+const MapShapeButton = ({ onCreateShape }: MapShapeButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [selectedCities, setSelectedCities] = useState<CityOption[]>([]);
 
-  const handleChange = (
-    newValue: MultiValue<CityOption>
-  ) => {
+  const handleChange = (newValue: MultiValue<CityOption>) => {
     setSelectedCities([...newValue]);
   };
 
   const handleSubmit = () => {
     if (selectedCities.length < 3) {
-      showToast(
-        "حداقل باید سه استان انتخاب کنید.",
-        "error"
-      );
+      showToast("حداقل باید سه استان انتخاب کنید", "error");
 
       return;
     }
 
-    const points: [number, number][] =
-      selectedCities.map((item) => item.data.latlng);
+    const points: [number, number][] = selectedCities.map(
+      (item) => item.data.latlng,
+    );
 
-    onCreateShape(points);
+    const sortedPoints = sortPointsAroundCenter(points);
+
+    console.log("Original:", points);
+    console.log("Sorted:", sortedPoints);
+
+    onCreateShape(sortedPoints);
 
     setIsOpen(false);
   };
