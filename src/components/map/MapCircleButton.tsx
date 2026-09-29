@@ -1,6 +1,8 @@
+import { showToast } from "../../utils/toast";
+
 const MapCircleButton = () => {
   const handleClick = () => {
-    alert("Map Circle Button Clicked!");
+    showToast("خطایی رخ داد", "error");
   };
 
   return (

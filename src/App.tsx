@@ -1,9 +1,14 @@
+import ToastProvider from "./components/alert/ToastProvider";
 import IranMap from "./components/map/IranMap";
 
-// import Map from "./components/Map";
-
 function App() {
-  return <IranMap  />;
+  return (
+    <>
+      <IranMap />
+
+      <ToastProvider />
+    </>
+  );
 }
 
 export default App;
