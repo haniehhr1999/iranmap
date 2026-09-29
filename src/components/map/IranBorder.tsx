@@ -14,10 +14,9 @@ const IranBorder = ({ data }: Props) => {
       data={data}
       interactive={false}
       style={{
-        color: "#374151",
-        weight: 2,
+        color: "#00167a",
+        weight: 1,
         opacity: 1,
-
         fill: false,
         fillOpacity: 0,
       }}

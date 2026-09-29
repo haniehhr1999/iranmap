@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useMap } from "react-leaflet";
-
 import type { DataModel } from "../../models";
 
 type CircleFocusProps = {
@@ -24,18 +23,10 @@ const CircleFocus = ({ city }: CircleFocusProps) => {
       return;
     }
 
-    /*
-     * فعلاً فقط روی مرکز استان Zoom می‌کنیم.
-     * این روش از fitBounds مطمئن‌تر و ساده‌تره.
-     */
-    map.flyTo(
-      [lat, lng],
-      11,
-      {
-        animate: true,
-        duration: 0.8,
-      }
-    );
+    map.flyTo([lat, lng], 11, {
+      animate: true,
+      duration: 0.8,
+    });
   }, [city, map]);
 
   return null;

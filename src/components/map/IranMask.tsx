@@ -1,24 +1,11 @@
 import { Polygon } from "react-leaflet";
-
-import type {
-  FeatureCollection,
-  Position,
-} from "geojson";
-
-import type {
-  LatLngExpression,
-} from "leaflet";
+import type { FeatureCollection, Position } from "geojson";
+import type { LatLngExpression } from "leaflet";
 
 type Props = {
   data: FeatureCollection;
 };
 
-/*
- * حداکثر Latitude قابل نمایش در Web Mercator
- * حدود 85.0511 درجه است.
- *
- * در نتیجه Mask کل جهان را می‌پوشاند.
- */
 const WORLD_MASK: LatLngExpression[] = [
   [-85.05112878, -179.9999],
   [-85.05112878, 179.9999],
@@ -27,18 +14,11 @@ const WORLD_MASK: LatLngExpression[] = [
   [-85.05112878, -179.9999],
 ];
 
-const convertRing = (
-  ring: Position[]
-): LatLngExpression[] => {
-  return ring.map(([lng, lat]) => [
-    lat,
-    lng,
-  ] as [number, number]);
+const convertRing = (ring: Position[]): LatLngExpression[] => {
+  return ring.map(([lng, lat]) => [lat, lng] as [number, number]);
 };
 
-const getIranRings = (
-  data: FeatureCollection
-): LatLngExpression[][] => {
+const getIranRings = (data: FeatureCollection): LatLngExpression[][] => {
   const rings: LatLngExpression[][] = [];
 
   data.features.forEach((feature) => {
@@ -48,27 +28,20 @@ const getIranRings = (
 
     // Polygon
     if (geometry.type === "Polygon") {
-      const outerRing =
-        geometry.coordinates[0];
+      const outerRing = geometry.coordinates[0];
 
-      rings.push(
-        convertRing(outerRing)
-      );
+      rings.push(convertRing(outerRing));
 
       return;
     }
 
     // MultiPolygon
     if (geometry.type === "MultiPolygon") {
-      geometry.coordinates.forEach(
-        (polygon) => {
-          const outerRing = polygon[0];
+      geometry.coordinates.forEach((polygon) => {
+        const outerRing = polygon[0];
 
-          rings.push(
-            convertRing(outerRing)
-          );
-        }
-      );
+        rings.push(convertRing(outerRing));
+      });
     }
   });
 
@@ -76,23 +49,17 @@ const getIranRings = (
 };
 
 const IranMask = ({ data }: Props) => {
-  const iranRings =
-    getIranRings(data);
+  const iranRings = getIranRings(data);
 
   if (!iranRings.length) {
-    console.error(
-      "No Polygon/MultiPolygon found"
-    );
+    console.error("No Polygon/MultiPolygon found");
 
     return null;
   }
 
   return (
     <Polygon
-      positions={[
-        WORLD_MASK,
-        ...iranRings,
-      ]}
+      positions={[WORLD_MASK, ...iranRings]}
       interactive={false}
       pathOptions={{
         stroke: false,

@@ -1,35 +1,24 @@
 import { useEffect, useState } from "react";
-
-import {
-  Circle,
-  CircleMarker,
-  MapContainer,
-  Polygon,
-  TileLayer,
-} from "react-leaflet";
-
+import { MapContainer, TileLayer } from "react-leaflet";
 import type { FeatureCollection } from "geojson";
 import type { DataModel } from "../../models";
-
 import L from "leaflet";
-
 import "leaflet/dist/leaflet.css";
-
 import IranMask from "./IranMask";
 import IranBorder from "./IranBorder";
 import MapShapeButton from "./MapShapeButton";
 import MapCircleButton from "./MapCircleButton";
 import CircleFocus from "./CircleFocus";
+import MapCircle from "./MapCircle";
+import MapShape from "./MapShape";
 
 const iranBounds = L.latLngBounds([24.5, 43.5], [40, 63.5]);
 
 const IranMap = () => {
+  
   const [iranData, setIranData] = useState<FeatureCollection | null>(null);
-
   const [shapePoints, setShapePoints] = useState<[number, number][]>([]);
-
-  const [selectedCircleCity, setSelectedCircleCity] =
-    useState<DataModel | null>(null);
+  const [selectedCircleCity, setSelectedCircleCity] = useState<DataModel | null>(null);
 
   const handleResetShape = () => {
     setShapePoints([]);
@@ -106,48 +95,12 @@ const IranMap = () => {
         )}
 
         {/* User selected shape */}
-        {shapePoints.length >= 3 && (
-          <Polygon
-            positions={shapePoints}
-            pathOptions={{
-              color: "#a10000",
-              weight: 1.5,
-              fill: true,
-              fillColor: "#f63b3b",
-              fillOpacity: 0.4,
-            }}
-          />
-        )}
+        <MapShape points={shapePoints} />
 
         {/* User selected circle */}
         {selectedCircleCity && (
           <>
-            <Circle
-              center={selectedCircleCity.latlng}
-              radius={selectedCircleCity.affectR}
-              pathOptions={{
-                color: "#ff2d2d",
-                weight: 4,
-
-                fill: true,
-                fillColor: "#ff7da8",
-                fillOpacity: 0.5,
-              }}
-            />
-
-            <CircleMarker
-              center={selectedCircleCity.latlng}
-              radius={5}
-              pathOptions={{
-                color: "#ff2d2d",
-                weight: 3,
-
-                fill: true,
-                fillColor: "#ff2d2d",
-                fillOpacity: 1,
-              }}
-            />
-
+            <MapCircle city={selectedCircleCity} />
             <CircleFocus city={selectedCircleCity} />
           </>
         )}
