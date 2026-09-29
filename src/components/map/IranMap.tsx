@@ -1,59 +1,58 @@
 import { useEffect, useState } from "react";
-
-import { MapContainer, TileLayer } from "react-leaflet";
-
+import { MapContainer, Polygon, TileLayer } from "react-leaflet";
 import type { FeatureCollection } from "geojson";
-
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-
 import IranMask from "./IranMask";
 import IranBorder from "./IranBorder";
 import MapShapeButton from "./MapShapeButton";
 import MapCircleButton from "./MapCircleButton";
 
+
+
+const iranBounds = L.latLngBounds([24.5, 43.5], [40, 63.5]);
+
 const IranMap = () => {
   const [iranData, setIranData] = useState<FeatureCollection | null>(null);
 
+  const [shapePoints, setShapePoints] = useState<[number, number][]>([]);
+
   useEffect(() => {
-    const loadIranMap = async () => {
+    const loadIranGeoJson = async () => {
       try {
         const response = await fetch("/data/iran.geojson");
 
         if (!response.ok) {
-          throw new Error("Failed to load iran.geojson");
+          throw new Error("Could not load iran.geojson");
         }
 
         const data = (await response.json()) as FeatureCollection;
 
-        console.log("Iran GeoJSON:", data);
-
-        console.log("Geometry:", data.features[0]?.geometry?.type);
-
         setIranData(data);
       } catch (error) {
-        console.error("GeoJSON loading error:", error);
+        console.error("Iran GeoJSON error:", error);
       }
     };
 
-    loadIranMap();
+    loadIranGeoJson();
   }, []);
-
-  const iranBounds: [[number, number], [number, number]] = [
-    [24.5, 43.5],
-    [40, 63.5],
-  ];
 
   return (
     <div
       style={{
         position: "relative",
+
         width: "100vw",
         height: "100vh",
       }}
     >
-      <MapShapeButton />
+      {/* Shape button */}
+      <MapShapeButton onCreateShape={setShapePoints} />
+
+      {/* Circle button */}
       <MapCircleButton />
 
+      {/* Map */}
       <MapContainer
         bounds={iranBounds}
         boundsOptions={{
@@ -69,6 +68,7 @@ const IranMap = () => {
         style={{
           width: "100%",
           height: "100%",
+
           backgroundColor: "#e5e7eb",
         }}
       >
@@ -78,11 +78,27 @@ const IranMap = () => {
           noWrap
         />
 
+        {/* Iran mask + border */}
         {iranData && (
           <>
             <IranMask data={iranData} />
+
             <IranBorder data={iranData} />
           </>
+        )}
+
+        {/* User selected shape */}
+        {shapePoints.length >= 3 && (
+          <Polygon
+            positions={shapePoints}
+            pathOptions={{
+              color: "#2563eb",
+              weight: 3,
+              fill: true,
+              fillColor: "#3b82f6",
+              fillOpacity: 0.4,
+            }}
+          />
         )}
       </MapContainer>
     </div>
