@@ -1,117 +1,91 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
-import {
-  MapContainer,
-  TileLayer,
-} from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 
-import type {
-  FeatureCollection,
-} from "geojson";
+import type { FeatureCollection } from "geojson";
 
 import "leaflet/dist/leaflet.css";
 
 import IranMask from "./IranMask";
 import IranBorder from "./IranBorder";
+import MapShapeButton from "./MapShapeButton";
+import MapCircleButton from "./MapCircleButton";
 
 const IranMap = () => {
-  const [iranData, setIranData] =
-    useState<FeatureCollection | null>(null);
+  const [iranData, setIranData] = useState<FeatureCollection | null>(null);
 
   useEffect(() => {
     const loadIranMap = async () => {
       try {
-        const response = await fetch(
-          "/data/iran.geojson"
-        );
+        const response = await fetch("/data/iran.geojson");
 
         if (!response.ok) {
-          throw new Error(
-            "Failed to load iran.geojson"
-          );
+          throw new Error("Failed to load iran.geojson");
         }
 
-        const data =
-          (await response.json()) as FeatureCollection;
+        const data = (await response.json()) as FeatureCollection;
 
-        console.log(
-          "Iran GeoJSON:",
-          data
-        );
+        console.log("Iran GeoJSON:", data);
 
-        console.log(
-          "Geometry:",
-          data.features[0]?.geometry?.type
-        );
+        console.log("Geometry:", data.features[0]?.geometry?.type);
 
         setIranData(data);
       } catch (error) {
-        console.error(
-          "GeoJSON loading error:",
-          error
-        );
+        console.error("GeoJSON loading error:", error);
       }
     };
 
     loadIranMap();
   }, []);
 
-  const iranBounds: [
-    [number, number],
-    [number, number]
-  ] = [
+  const iranBounds: [[number, number], [number, number]] = [
     [24.5, 43.5],
     [40, 63.5],
   ];
 
   return (
-    <MapContainer
-      bounds={iranBounds}
-      boundsOptions={{
-        padding: [20, 20],
-      }}
-
-      maxBounds={[
-        [22, 41],
-        [42, 67],
-      ]}
-
-      maxBoundsViscosity={1}
-
-      minZoom={5}
-      maxZoom={18}
-
+    <div
       style={{
+        position: "relative",
         width: "100vw",
         height: "100vh",
-
-        // همین رنگ بیرون ایران دیده می‌شود
-        backgroundColor: "#e5e7eb",
       }}
     >
-      <TileLayer
-        attribution="© OpenStreetMap contributors"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        noWrap
-      />
+      <MapShapeButton />
+      <MapCircleButton />
 
-      {iranData && (
-        <>
-          {/* اول Mask */}
-          <IranMask
-            data={iranData}
-          />
+      <MapContainer
+        bounds={iranBounds}
+        boundsOptions={{
+          padding: [30, 30],
+        }}
+        maxBounds={[
+          [22, 41],
+          [42, 67],
+        ]}
+        maxBoundsViscosity={1}
+        minZoom={5}
+        maxZoom={18}
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "#e5e7eb",
+        }}
+      >
+        <TileLayer
+          attribution="© OpenStreetMap contributors"
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          noWrap
+        />
 
-          {/* بعد Border تا روی Mask قرار بگیرد */}
-          <IranBorder
-            data={iranData}
-          />
-        </>
-      )}
-    </MapContainer>
+        {iranData && (
+          <>
+            <IranMask data={iranData} />
+            <IranBorder data={iranData} />
+          </>
+        )}
+      </MapContainer>
+    </div>
   );
 };
 
