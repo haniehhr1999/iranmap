@@ -15,10 +15,10 @@ import MapShape from "./MapShape";
 const iranBounds = L.latLngBounds([24.5, 43.5], [40, 63.5]);
 
 const IranMap = () => {
-  
   const [iranData, setIranData] = useState<FeatureCollection | null>(null);
   const [shapePoints, setShapePoints] = useState<[number, number][]>([]);
-  const [selectedCircleCity, setSelectedCircleCity] = useState<DataModel | null>(null);
+  const [selectedCircleCity, setSelectedCircleCity] =
+    useState<DataModel | null>(null);
 
   const handleResetShape = () => {
     setShapePoints([]);
